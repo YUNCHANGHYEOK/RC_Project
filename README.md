@@ -99,15 +99,105 @@
 - 좌우 조향: 좌/우 LED 점멸
 - 후진 시: 양쪽 LED 점등
 
-## 🔄 통신 프로토콜 (Serial)
+# 🔄 Raspberry Pi ↔ Arduino Serial 통신 프로토콜
 
-| 항목           | 내용                             |
-|----------------|----------------------------------|
-| 포맷           | `center_x,center_y\n`            |
-| 통신 방향      | Raspberry Pi → Arduino           |
-| 전송 간격      | 최소 100ms 이상, 값 변경 시 전송 |
-| 미검출 처리     | `-1,-1\n` 전송                   |
-| Baudrate       | 9600 bps                         |
+본 시스템은 **Raspberry Pi (Python)** 에서 영상 처리된 라인트레이싱 결과를 **Arduino (C++)** 로 전송하여 자율주행 동작을 수행합니다.  
+
+  **단방향 Serial 통신(RPi → Arduino)** 기반으로 구현되며, 통신 구조는 단순하지만 실시간성과 안정성을 동시에 제공합니다.
+
+---
+
+### 📬 통신 구조
+
+| 항목             | 설명 |
+|------------------|------|
+| **통신 방향**     | Raspberry Pi → Arduino (단방향) |
+| **통신 속도**     | 9600 bps |
+| **전송 주기**     | 최소 100ms 이상<br>(버퍼 오버플로 방지 목적) |
+| **데이터 포맷**   | `"center_x,center_y\n"` |
+| **정상 예시**     | `320,410\n` |
+| **미검출 예시**   | `-1,-1\n` |
+| **에러 처리**     | 100ms 이상 수신 없음 또는 `-1,-1` 수신 시 감지 실패로 간주 |
+
+---
+
+### 📤 Raspberry Pi 측 (Python) — 송신 코드
+
+```python
+# 중심 좌표가 감지되었을 경우
+serial.write(f"{cx},{cy}\n".encode())
+
+# 라인을 찾지 못했을 경우
+serial.write("-1,-1\n".encode())
+```
+
+- `cx`, `cy`: 라인 중심 좌표 (정수형)
+- `\n`: 각 프레임의 종료를 나타내는 **종단 문자**
+- 전송 간격: **최소 100ms 이상**
+
+---
+
+### 📥 Arduino 측 (C++) — 수신 코드
+
+```cpp
+while (Serial.available()) {
+  char c = Serial.read();
+  if (c == '\n') {
+    int commaIndex = serialBuffer.indexOf(',');
+    if (commaIndex > 0) {
+      lineCenter = serialBuffer.substring(0, commaIndex).toInt();
+      lineY = serialBuffer.substring(commaIndex + 1).toInt();
+      lastSerialTime = millis();
+      lostLineCount = 0;
+    }
+    serialBuffer = "";
+  } else {
+    serialBuffer += c;
+  }
+}
+```
+
+### 🔍 처리 방식
+
+- **문자 단위로 읽기** → `\n` 수신 시 패킷 완성
+- `,`를 기준으로 좌표 분리 → `toInt()`로 변환
+- 정상 좌표 수신 시 `lastSerialTime` 초기화 및 로직 실행
+- 비정상 또는 누락 시 감지 실패 처리
+
+---
+
+### ⚠️ 수신 타임아웃 및 예외 처리
+
+```cpp
+if (millis() - lastSerialTime > serialFrameTimeout) {
+  if (lostLineCount < lostLineThreshold) {
+    lostLineCount++;
+    lastSerialTime = millis();
+  }
+  if (lostLineCount >= lostLineThreshold) {
+    lineCenter = -1;
+    lineY = -1; // 감지 실패로 간주
+  }
+}
+```
+
+- 일정 시간 수신 없음 시: **`lostLineCount` 증가**
+- 연속 실패(`lostLineThreshold` 초과) → **`-1,-1`로 강제 처리**
+- 이 상태에서는 **후진 또는 회피 등 안전 로직 실행 가능**
+
+---
+
+### ✅ 요약
+
+| 항목 | 내용 |
+|------|------|
+| **전송 포맷** | `"center_x,center_y\n"` (UTF-8 인코딩) |
+| **전송 주기** | 100ms 이상 |
+| **수신 방식** | 문자 단위 파싱, 종단문자 `\n` 기준 |
+| **에러 처리** | `-1,-1` 전송 또는 timeout 발생 시 감지 실패 간주 |
+
+---
+
 
 ## 💻 설치 및 실행 방법
 
