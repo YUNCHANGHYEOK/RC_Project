@@ -98,7 +98,7 @@
 
 - 좌우 조향: 좌/우 LED 점멸
 - 후진 시: 양쪽 LED 점등
-
+---
 # 🔄 Raspberry Pi ↔ Arduino Serial 통신 프로토콜
 
 본 시스템은 **Raspberry Pi (Python)** 에서 영상 처리된 라인트레이싱 결과를 **Arduino (C++)** 로 전송하여 자율주행 동작을 수행합니다.  
@@ -243,16 +243,34 @@ if (millis() - lastSerialTime > serialFrameTimeout) {
 
 ⚠️ 업로드 전 Serial Monitor 종료 필수
 
-## 🖼️ 시각 자료 예시
+## 🖼️ 시각 자료 예시, 📺 Youtube 시연 영상 (사진을 클릭하면 영상 재생)
 
 - **라인 인식 예시**
 
-  ![](assets/line_detection_example.png)
+<table>
+  <tr>
+    <td style="text-align: center;">
+      <a href="https://youtube.com/shorts/51LlgFAMZnk" target="_blank">
+        <img src="https://img.youtube.com/vi/51LlgFAMZnk/hqdefault.jpg" width="300px">
+      </a>
+      <div>🚗 일직선 자율주행</div>
+    </td>
+    <td style="text-align: center;">
+      <a href="https://youtube.com/shorts/J_yHN7ol2DM" target="_blank">
+        <img src="https://img.youtube.com/vi/J_yHN7ol2DM/hqdefault.jpg" width="300px">
+      </a>
+      <div>🧪 시범 자율주행</div>
+    </td>
+    <td style="text-align: center;">
+      <a href="https://youtube.com/shorts/NI0ZMiQrU_s" target="_blank">
+        <img src="https://img.youtube.com/vi/NI0ZMiQrU_s/hqdefault.jpg" width="300px">
+      </a>
+      <div>✅ 실제 구현 완료된 자율주행</div>
+    </td>
+  </tr>
+</table>
 
-- **시스템 아키텍처**
 
-  ![](assets/system-architecture.png)
-  
 ---
 
 ## 📚 기술 스택 요약
