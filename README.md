@@ -35,9 +35,10 @@
 ├── README.md                        # 본 문서
 ├── LICENSE                          # 오픈소스 라이선스 (MIT)
 └── WebRTC/
-    ├── camera_stream_server.py      # python WebRTC 서버 코드
-    └── index.html                   # WebRTC 웹 뷰어 코드
-    
+|   ├── camera_stream_server.py      # python WebRTC 서버 코드
+|   └── index.html                   # WebRTC 웹 뷰어 코드
+└── images/
+    ├── linetracking.png             # 웹 뷰어 이미지
 ```
 
 ## ⚙️ 주요 기능 및 시스템 아키텍처
