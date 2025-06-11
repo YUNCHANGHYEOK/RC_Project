@@ -29,15 +29,15 @@
 ## 🗂️ 프로젝트 파일 구조 - 수정예정
 
 ```
-.
-├── hybrid_manual_auto.ino           # 수동 및 자율 주행 통합 아두이노 코드
-├── camera_stream_server.py         # PiCamera2 기반 영상 처리 및 WebRTC 서버
+.         
+├── arduino/
+|   └── hybrid_manual_auto.ino       # 수동 및 자율 주행 통합 아두이노 코드
 ├── README.md                        # 본 문서
 ├── LICENSE                          # 오픈소스 라이선스 (MIT)
-└── assets/
-    ├── system-banner.png            # 프로젝트 배너 이미지
-    ├── system-architecture.png      # 시스템 흐름도
-    └── line_detection_example.png   # 라인 인식 시각화 예시
+└── WebRTC/
+    ├── camera_stream_server.py      # python WebRTC 서버 코드
+    └── index.html                   # WebRTC 웹 뷰어 코드
+    
 ```
 
 ## ⚙️ 주요 기능 및 시스템 아키텍처
