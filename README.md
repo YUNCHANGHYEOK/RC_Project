@@ -248,7 +248,12 @@ if (millis() - lastSerialTime > serialFrameTimeout) {
    - HTML 내부에 포함된 JavaScript가 WebSocket (8765)을 통해 라인 중심 좌표와 영상을 수신
 
 ---
-## 🧠 주요 로직 설명 (Python 코드)
+## 🧠 주요 로직 설명 (Python 코드) + 사진
+| UI 1 | UI 2 | UI 3 |
+|:----:|:----:|:----:|
+| ![UI1](https://github.com/user-attachments/assets/75700ac9-ecf4-4bc4-88ab-c4e570896909) | ![UI2](https://github.com/user-attachments/assets/71211712-eb0b-40d5-b1de-949f65bc694d) | ![UI3](https://github.com/user-attachments/assets/225c180f-59cb-4b49-899b-3b2d01c03b30) |
+
+
 
 1. **🎯 HSV 마스크 기반 라인 검출**
    ```python
