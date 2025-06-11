@@ -31,12 +31,12 @@
 ```
 .         
 ├── arduino/
-|   └── hybrid_manual_auto.ino       # 수동 및 자율 주행 통합 아두이노 코드
+│   └── hybrid_manual_auto.ino       # 수동 및 자율 주행 통합 아두이노 코드
 ├── README.md                        # 본 문서
 ├── LICENSE                          # 오픈소스 라이선스 (MIT)
 └── WebRTC/
-|   ├── camera_stream_server.py      # python WebRTC 서버 코드
-|   └── index.html                   # WebRTC 웹 뷰어 코드
+│   ├── camera_stream_server.py      # python WebRTC 서버 코드
+│   └── index.html                   # WebRTC 웹 뷰어 코드
 └── images/
     └── linetracking.png             # 웹 뷰어 이미지
 ```
