@@ -1,0 +1,121 @@
+<!DOCTYPE html> <!-- HTML5 문서임을 선언 -->
+<html lang="ko"> <!-- 문서 언어를 한국어로 설정 -->
+<head>
+  <meta charset="UTF-8" /> <!-- 문자 인코딩을 UTF-8로 지정 -->
+  <title>📡 WebRTC 라인트레이싱 뷰어</title> <!-- 브라우저 탭 제목 -->
+  <style>
+    /* 전체 페이지 기본 스타일 */
+    body {
+      font-family: sans-serif; /* 기본 글꼴 */
+      background: #111; /* 배경을 어두운 회색으로 */
+      color: #fff; /* 글자색은 흰색 */
+      text-align: center; /* 가운데 정렬 */
+      padding-top: 20px;
+    }
+
+    /* 영상 출력 창 스타일 */
+    video {
+      width: 640px;
+      height: 480px;
+      background: black; /* 초기에는 검은 화면 */
+      margin: 10px auto;
+      display: block;
+      border: 2px solid #0f0; /* 초록 테두리 */
+    }
+
+    /* 중심 좌표 offset 표시 스타일 */
+    #offset {
+      font-size: 20px;
+      margin-top: 10px;
+    }
+
+    /* 상태 메시지 표시 영역 스타일 */
+    #status {
+      margin-top: 15px;
+      font-size: 14px;
+      color: #aaa; /* 연한 회색 */
+    }
+  </style>
+</head>
+<body>
+  <h1>🎥 WebRTC 라인트레이싱 스트리밍</h1> <!-- 페이지 상단 제목 -->
+
+  <!-- 비디오 스트림 표시 영역 -->
+  <video id="video" autoplay playsinline muted></video>
+
+  <!-- 중심 좌표의 x값 기준 offset 출력 -->
+  <div>📐 Offset: <span id="offset">N/A</span></div>
+
+  <!-- 상태 메시지 출력 -->
+  <div id="status">⏳ 연결 대기 중...</div>
+
+  <script>
+    // HTML 요소 불러오기
+    const video = document.getElementById("video");
+    const offsetDisplay = document.getElementById("offset");
+    const statusDiv = document.getElementById("status");
+
+    // WebRTC 피어 연결 생성
+    const pc = new RTCPeerConnection();
+
+    // 수신 전용 트랜시버 추가 (영상만 받음)
+    pc.addTransceiver("video", { direction: "recvonly" });
+
+    // 비디오 트랙이 수신되었을 때 실행됨
+    pc.ontrack = (event) => {
+      console.log("📺 스트림 수신됨!");
+      video.srcObject = event.streams[0]; // 받은 스트림을 비디오에 연결
+      video.play().then(() => {
+        statusDiv.textContent = "✅ 영상 재생 중!"; // 재생 성공 시 메시지 변경
+      }).catch((e) => {
+        console.error("❌ 영상 재생 실패:", e);
+        statusDiv.textContent = "❌ 영상 재생 오류: " + e.message; // 오류 메시지 출력
+      });
+    };
+
+    // 서버와 WebSocket 연결 시작 (같은 호스트의 8765 포트)
+    const ws = new WebSocket("ws://" + location.hostname + ":8765");
+
+    // WebSocket 연결이 열리면 실행됨
+    ws.onopen = async () => {
+      statusDiv.textContent = "🔗 WebSocket 연결됨. offer 전송 중...";
+      const offer = await pc.createOffer(); // WebRTC 연결 요청 생성
+      await pc.setLocalDescription(offer);  // 로컬에 저장
+      ws.send(JSON.stringify(offer));       // WebSocket으로 서버에 보냄
+    };
+
+    // WebSocket에서 메시지를 받으면 실행됨
+    ws.onmessage = async (event) => {
+      try {
+        const data = JSON.parse(event.data); // 받은 메시지를 JSON으로 파싱
+        console.log("📩 WebSocket 수신:", data);
+
+        if (data.type === "answer") {
+          // WebRTC 연결 응답 처리
+          await pc.setRemoteDescription(data);
+          statusDiv.textContent = "🎉 WebRTC 연결 완료!";
+        } else if (data.x !== undefined && data.y !== undefined) {
+          // 아두이노에서 전송한 중심 좌표를 기반으로 offset 계산
+          const offset = data.x - 320; // 640 해상도의 중앙 x 좌표 기준
+          offsetDisplay.textContent = offset;
+        }
+      } catch (e) {
+        console.error("❌ 메시지 파싱 오류:", e);
+        statusDiv.textContent = "❌ 메시지 처리 오류";
+      }
+    };
+
+    // WebSocket 오류가 발생했을 때
+    ws.onerror = (e) => {
+      console.error("❌ WebSocket 오류:", e);
+      statusDiv.textContent = "❌ WebSocket 연결 오류";
+    };
+
+    // WebSocket 연결이 끊겼을 때
+    ws.onclose = () => {
+      console.warn("🔌 WebSocket 연결 종료됨");
+      statusDiv.textContent = "🔌 연결 종료됨";
+    };
+  </script>
+</body>
+</html>
