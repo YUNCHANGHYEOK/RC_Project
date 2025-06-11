@@ -199,33 +199,48 @@ if (millis() - lastSerialTime > serialFrameTimeout) {
 ---
 
 
-## 💻 설치 및 실행 방법
+## 💻 설치방법
 
-### 🐍 Python WebRTC 서버 (Raspberry Pi 5) --- 이부분을 직접 맞게 수정해줘
+### 🐍 Python WebRTC 서버 (Raspberry Pi 5)
 
-1. **환경 설치**
+1. **프로젝트 클론**
    ```bash
-   sudo apt update && sudo apt upgrade -y
-   sudo apt install python3-picamera2 python3-opencv python3-serial python3-pip -y
-   pip install aiortc websockets av
+   git clone https://github.com/YUNCHANGHYEOK/RC_Project.git
+   cd RC_Project
    ```
 
-2. **카메라 인터페이스 활성화**
+2. **가상환경 생성 및 활성화**
    ```bash
-   sudo raspi-config
-   → Interface Options → Camera → Enable → 재부팅
+   가상환경 생성 및 활성화
+   python3 -m venv venv
+   source venv/bin/activate  # Windows의 경우: venv\\Scripts\\activate
    ```
 
-3. **서버 실행**
+3. **필요한 패키지 설치**
    ```bash
-   cd [프로젝트 디렉토리]
-   python3 camera_stream_server.py
+   pip install opencv-python aiortc websockets picamera2 numpy
    ```
 
-4. **접속**
-   - WebSocket: `ws://[라즈베리파이 IP]:8765`
-   - WebRTC 기반 브라우저 실시간 영상 확인
-     
+---
+
+## ▶️ 실행 방법
+
+1. **WebRTC 영상 처리 서버 실행**
+   ```bash
+   source venv/bin/activate            # 가상환경 활성화
+   python camera_stream_server.py     # 라인트레이싱 + WebRTC 서버 실행
+   ```
+   - Picamera2로 라인을 인식하고
+   - 라인의 중심좌표를 아두이노로 전송
+   - WebRTC + WebSocket을 통해 브라우저로 영상 스트리밍
+
+2. **클라이언트 HTML 뷰어 실행**
+   다른 터미널에서 동일한 가상환경을 활성화한 후, HTML 파일이 있는 디렉토리에서 아래 명령어 실행:
+   ```bash
+   source venv/bin/activate            # 가상환경 활성화
+   cd html/                            # (예: HTML 파일이 html 폴더에 있다면)
+   python -m http.server 8000         # 웹서버 실행
+   ```
 
 
 ### 🔧 Arduino 코드 업로드 (Arduino Uno)
