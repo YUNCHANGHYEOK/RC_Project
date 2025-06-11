@@ -241,7 +241,11 @@ if (millis() - lastSerialTime > serialFrameTimeout) {
    cd html/                            # (예: HTML 파일이 html 폴더에 있다면)
    python -m http.server 8000         # 웹서버 실행
    ```
+   - HTML 내부에 포함된 JavaScript가 WebSocket (8765)을 통해 라인 중심 좌표와 영상을 수신합니다.
+  
+     
 
+---
 
 ### 🔧 Arduino 코드 업로드 (Arduino Uno)
 
