@@ -245,9 +245,54 @@ if (millis() - lastSerialTime > serialFrameTimeout) {
    cd html/                            # (예: HTML 파일이 html 폴더에 있다면)
    python -m http.server 8000         # 웹서버 실행
    ```
-   - HTML 내부에 포함된 JavaScript가 WebSocket (8765)을 통해 라인 중심 좌표와 영상을 수신합니다.
-  
-     
+   - HTML 내부에 포함된 JavaScript가 WebSocket (8765)을 통해 라인 중심 좌표와 영상을 수신
+
+---
+## 🧠 주요 로직 설명 (Python 코드)
+
+1. **🎯 HSV 마스크 기반 라인 검출**
+   ```python
+   hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
+   lower_black = np.array([0, 0, 0])
+   upper_black = np.array([180, 90, 170])
+   mask = cv2.inRange(hsv, lower_black, upper_black)
+   ```
+   - 카메라 영상에서 어두운(검정색) 선을 인식하기 위해 BGR 이미지를 HSV로 변환한 후, 특정 범위에 해당하는 픽셀만 흰색으로 마스킹
+
+2. **🟩 ROI1에서 중심 좌표 계산(라인 추적)**
+   ```python
+   roi = mask[320:400, :]  # 하단 영역 잘라내기
+   ys, xs = np.where(roi == 255)
+
+   if len(xs) > 100:
+       points = np.array(list(zip(xs, ys)))
+       [vx, vy, x0, y0] = cv2.fitLine(points, cv2.DIST_L2, 0, 0.01, 0.01)
+       t = ((400 - 320) // 2 - y0) / vy
+       cx = int(x0 + vx * t)
+   ```
+   - 영상 하단 영역(ROI1)에서 흰색  픽셀 위치를 수집한 뒤, 직선을 피팅하여 라인의 중심좌표를 계산
+   - 이 값은 RC카의 주행 중심에 활용
+
+3. **🔁 이전 중심 유지 로직(라인 미탐지 대비)**
+   ```python
+   if len(xs) <= 100:
+       lost_counter += 1
+       if last_valid_center and lost_counter < 10:
+           center_x, center_y = last_valid_center
+       else:
+           center_x = center_y = None
+   ```
+   - 라인이 일시적으로 감지되지 않더라도, 최근 탐지된 좌표를 일정 프레임 동안 유지시켜 RC카가 부드럽게 주행하도록 함
+
+4. **🔌 아두이노로 좌표 전송**
+   ```python
+   if center_x is not None:
+       arduino.write(f\"{center_x},{center_y}\\n\".encode())
+       response = arduino.readline().decode().strip()
+   ```
+   - 감지한 중심 좌표를 아두이노로 시리얼 통신을 통해 전송
+   - RC카의 조향 및 ESC 제어는 이 값을 기반으로 처리됨
 
 ---
 
