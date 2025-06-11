@@ -38,7 +38,7 @@
 |   ├── camera_stream_server.py      # python WebRTC 서버 코드
 |   └── index.html                   # WebRTC 웹 뷰어 코드
 └── images/
-    ├── linetracking.png             # 웹 뷰어 이미지
+    └── linetracking.png             # 웹 뷰어 이미지
 ```
 
 ## ⚙️ 주요 기능 및 시스템 아키텍처
