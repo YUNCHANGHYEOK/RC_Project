@@ -294,6 +294,14 @@ if (millis() - lastSerialTime > serialFrameTimeout) {
    - 감지한 중심 좌표를 아두이노로 시리얼 통신을 통해 전송
    - RC카의 조향 및 ESC 제어는 이 값을 기반으로 처리됨
 
+5. **📡 WebRTC를 통한 영상 스트리밍**
+   ```python
+   video_frame = VideoFrame.from_ndarray(color_frame, format=\"bgr24\")
+   video_frame.pts = pts
+   return video_frame
+   ```
+   - 처리된 프레임을 WebRTC용 비디오 프레임 객체로 변환한 뒤, 브라우저로 전송
+   - 브라우저에서는 실시간으로 라인 검출 상태 확인 가능
 ---
 
 ### 🔧 Arduino 코드 업로드 (Arduino Uno)
