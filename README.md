@@ -239,7 +239,7 @@ if (millis() - lastSerialTime > serialFrameTimeout) {
    - WebRTC + WebSocket을 통해 브라우저로 영상 스트리밍
 
 2. **클라이언트 HTML 뷰어 실행**
-   다른 터미널에서 동일한 가상환경을 활성화한 후, HTML 파일이 있는 디렉토리에서 아래 명령어 실행:
+   - 다른 터미널에서 동일한 가상환경을 활성화한 후, HTML 파일이 있는 디렉토리에서 아래 명령어 실행:
    ```bash
    source venv/bin/activate            # 가상환경 활성화
    cd html/                            # (예: HTML 파일이 html 폴더에 있다면)
