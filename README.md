@@ -249,9 +249,21 @@ if (millis() - lastSerialTime > serialFrameTimeout) {
 
 ---
 ## 🧠 주요 로직 설명 (Python 코드) + 사진
-| UI 1 | UI 2 | UI 3 |
+
+### 📌 초기 버전들
+
+| 초기 버전 1 | 초기 버전 2 | 초기 버전 3 |
 |:----:|:----:|:----:|
 | ![UI1](https://github.com/user-attachments/assets/75700ac9-ecf4-4bc4-88ab-c4e570896909) | ![UI2](https://github.com/user-attachments/assets/71211712-eb0b-40d5-b1de-949f65bc694d) | ![UI3](https://github.com/user-attachments/assets/225c180f-59cb-4b49-899b-3b2d01c03b30) |
+
+---
+
+### ✅ 최종 버전
+
+| 최종 버전 |
+|:----:|
+| ![최종버전](https://github.com/user-attachments/assets/1c693819-6eaf-4cc7-acd8-1a6a0e4db12e) |
+
 
 
 
